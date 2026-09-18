@@ -1,0 +1,2 @@
+const styles = { critical: 'bg-rose-100 text-rose-700', high: 'bg-orange-100 text-orange-700', medium: 'bg-amber-100 text-amber-700', low: 'bg-emerald-100 text-emerald-700', open: 'bg-indigo-100 text-indigo-700', pending: 'bg-amber-100 text-amber-700', resolved: 'bg-emerald-100 text-emerald-700', closed: 'bg-slate-100 text-slate-600' }
+export default function Badge({ value }) { return <span className={`rounded-full px-2.5 py-1 text-xs font-bold capitalize ${styles[value?.toLowerCase()] || 'bg-slate-100 text-slate-600'}`}>{value || '—'}</span> }

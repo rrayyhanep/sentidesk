@@ -1,0 +1,4 @@
+[
+  {"id":"conv-001","customer_name":"Aisha Rahman","email":"aisha@example.com","status":"open","priority":"high","messages":[{"role":"customer","content":"Urgent! My account is locked and I cannot sign in.","timestamp":"2026-09-18T08:30:00Z"},{"role":"agent","content":"I can help verify your account safely.","timestamp":"2026-09-18T08:32:00Z"}]},
+  {"id":"conv-002","customer_name":"Daniel Lee","email":"daniel@example.com","status":"resolved","priority":"low","messages":[{"role":"customer","content":"Thanks, the refund was processed perfectly.","timestamp":"2026-09-17T12:00:00Z"}]}
+]
