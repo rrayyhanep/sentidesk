@@ -108,5 +108,14 @@ def load_provider_messages(owner, provider):
 
 def save_provider_message(owner, provider, payload):
     with connection() as db:
+        external_id = payload.get("external_id")
+        if external_id:
+            existing = db.execute(
+                "SELECT 1 FROM provider_messages WHERE owner_email=? AND provider=? "
+                "AND json_extract(payload, '$.external_id')=? LIMIT 1",
+                (owner, provider, external_id),
+            ).fetchone()
+            if existing:
+                return
         db.execute("INSERT INTO provider_messages(owner_email,provider,payload) VALUES(?,?,?)",
                    (owner, provider, json.dumps(payload)))

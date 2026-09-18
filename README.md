@@ -74,7 +74,40 @@ Without Resend or SMTP (demo mode), registration returns a development verificat
 
 Email verification is required to complete account verification, but it is not required to sign in. A user can sign in while their account is pending verification and complete verification later.
 
-Provider credentials are read from environment variables (`GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `INSTAGRAM_CLIENT_ID`, `INSTAGRAM_CLIENT_SECRET`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_VERIFY_TOKEN`). The provider pages and inbox storage are implemented per user, and provider-specific inbox data is available at `GET/POST /connections/{provider}/inbox`. Live Gmail/Instagram/WhatsApp ingestion additionally requires each provider's OAuth/app approval, redirect URL, scopes, webhook, and production credentials; the app does not pretend that an unconfigured provider has live access.
+Provider credentials are read from environment variables (`GMAIL_CLIENT_ID`,
+`GMAIL_CLIENT_SECRET`, `GMAIL_REDIRECT_URI`, `INSTAGRAM_CLIENT_ID`,
+`INSTAGRAM_CLIENT_SECRET`, `INSTAGRAM_REDIRECT_URI`, `INSTAGRAM_VERIFY_TOKEN`,
+`INSTAGRAM_APP_SECRET`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_VERIFY_TOKEN`,
+`WHATSAPP_APP_SECRET`, `WHATSAPP_PHONE_NUMBER_ID`, and
+`WHATSAPP_BUSINESS_ACCOUNT_ID`). The provider pages and inbox storage are
+implemented per user, and provider-specific inbox data is available at
+`GET/POST /connections/{provider}/inbox`. Gmail sync now calls the Gmail API,
+refreshing encrypted server-side OAuth tokens when required. Instagram and
+WhatsApp inboxes are webhook-driven: configure the app secret and verification
+token, then expose `GET/POST /webhooks/{provider}` to Meta. Webhook payloads
+are signature-validated and persisted per connected user; `/inbox/sync` reports
+their webhook-driven status instead of pretending to poll an API.
+
+### Official provider integration scaffolding
+
+Copy `backend/.env.example` to `backend/.env` and configure credentials only in the
+server environment. Gmail and Instagram expose authenticated
+`GET /connections/{provider}/oauth/start`, `/oauth/state`, and `/oauth/callback`
+routes. OAuth state is short-lived, single-use, bound to the signed-in user, and
+stored only as a server-side digest; client secrets and authorization codes are
+never persisted or returned. The callback exchanges the code server-to-server, encrypts returned access and
+refresh tokens using a key derived from `JWT_SECRET`, and stores only token
+metadata plus ciphertext in the server database. Keep `JWT_SECRET` stable and
+strong; changing it invalidates stored provider credentials.
+
+WhatsApp uses the official Cloud API onboarding contract at
+`POST /connections/whatsapp/onboard` and does not implement WhatsApp Web QR codes,
+session scraping, or unofficial clients. Configure the access token, verify
+token, phone number ID, and business account ID, then add Meta webhook
+verification/delivery separately. `POST /connections/{provider}/inbox/sync`
+returns explicit `unconfigured`, `not_authenticated`, `synced` (Gmail), or
+`webhook_driven` (Instagram/WhatsApp) status without making external calls
+when setup is incomplete.
 
 ## Main API routes
 
