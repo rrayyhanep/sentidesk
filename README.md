@@ -83,3 +83,4 @@ Provider credentials are read from environment variables (`GMAIL_CLIENT_ID`, `GM
 - `POST /analyze-contract`, `POST /analyze-batch`
 - `GET /dashboard-stats`, `GET /category/{category_name}`, `GET /conversation/{id}`
 - Additional conversation and `/analyze/*` routes are available for the UI and API exploration.
+ #sentidesk
