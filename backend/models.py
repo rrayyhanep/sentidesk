@@ -36,6 +36,9 @@ class EmailVerification(BaseModel):
 class ProviderConnection(BaseModel):
     platform: Literal["gmail", "whatsapp", "instagram"]
 
+class InstagramOnboardRequest(BaseModel):
+    handle: str | None = Field(default=None, max_length=100)
+
 class ProviderMessage(BaseModel):
     sender: str = Field(min_length=1, max_length=320)
     content: str = Field(min_length=1, max_length=10000)
@@ -46,7 +49,7 @@ class Message(BaseModel):
     model_config = ConfigDict(extra="ignore")
     role: Literal["customer", "agent", "system"] = "customer"
     content: str = Field(min_length=1, max_length=10000)
-    timestamp: datetime | None = None
+    timestamp: datetime | str | None = None
 
 class ConversationCreate(BaseModel):
     customer_name: str = Field(min_length=1, max_length=120)
@@ -59,6 +62,7 @@ class ConversationUpdate(BaseModel):
     priority: Literal["low", "medium", "high", "critical"] | None = None
 
 class AnalysisRequest(BaseModel):
+    conversation_id: str | None = None
     text: str = Field(min_length=1, max_length=30000)
 
 class BulkAnalysisRequest(BaseModel):
@@ -70,3 +74,12 @@ class ContractAnalysisRequest(BaseModel):
 
 class ContractBatchRequest(BaseModel):
     conversations: list[ContractAnalysisRequest] = Field(min_length=1, max_length=100)
+
+class WhatsAppSendRequest(BaseModel):
+    to: str = Field(min_length=1, max_length=50)
+    message: str = Field(min_length=1, max_length=5000)
+
+class MessageStatusUpdateRequest(BaseModel):
+    provider: str = Field(default="gmail", max_length=50)
+    external_id: str = Field(min_length=1, max_length=255)
+    resolution_status: str = Field(min_length=1, max_length=50)
